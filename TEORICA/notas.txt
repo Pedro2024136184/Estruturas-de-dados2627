@@ -1,0 +1,6 @@
+O(n) - complexidade linear
+O(1) - complexidade constante
+O(n^2) - complexidade quadrática
+O(n^3) - complexidade cúbica
+O(logn) - complexidade logarítmica
+O(n^4) - complexidade quartica

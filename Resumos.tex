@@ -1,0 +1,136 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath}
+
+\title{Resumos de Estruturas de Dados}
+\author{Pedro}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% ---------------------------------------------------------
+% FICHA 1
+% ---------------------------------------------------------
+\section{Ficha 1 - Análise de Complexidade (Big-O)}
+A análise de complexidade permite avaliar o desempenho de um algoritmo à medida que o tamanho da entrada ($N$) cresce para o infinito.
+
+\subsection*{Principais Complexidades}
+\begin{itemize}
+    \item \textbf{Constante $O(1)$}: O tempo de execução é fixo e não depende de $N$.
+    \item \textbf{Linear $O(N)$}: O tempo cresce de forma diretamente proporcional a $N$. Se $N$ aumenta 4x, o tempo aumenta 4x.
+    \item \textbf{Quadrática $O(N^2)$}: Comum em matrizes ou dois ciclos aninhados. Se $N$ aumenta 4x, o tempo aumenta $4^2 = 16$ vezes.
+    \item \textbf{Cúbica $O(N^3)$}: Três ciclos aninhados. Se $N$ aumenta 4x, o tempo aumenta $4^3 = 64$ vezes.
+    \item \textbf{Logarítmica $O(\log N)$}: Ocorre quando dividimos o problema ao meio em cada passo ou multiplicamos a variável de iteração. É extremamente rápido. Se o $N$ aumenta 4x, o tempo aumenta apenas um valor constante (ex: +2 iterações).
+\end{itemize}
+
+\subsection*{Regras de Ouro}
+\begin{enumerate}
+    \item \textbf{Ignorar constantes}: $O(2N)$ ou $O(N/2)$ são apenas $O(N)$.
+    \item \textbf{Manter o termo dominante}: Numa equação como $O(N^4 + N^2)$, a complexidade final é apenas $O(N^4)$.
+\end{enumerate}
+
+
+% ---------------------------------------------------------
+% FICHA 2
+% ---------------------------------------------------------
+\section{Ficha 2 - Pesquisa Binária e Variações}
+A Pesquisa Binária é um algoritmo de pesquisa otimizado com complexidade $O(\log N)$.
+
+\subsection*{Mecanismo e Requisitos}
+\begin{itemize}
+    \item \textbf{Requisito Absoluto}: O array tem de estar obrigatoriamente \textbf{ordenado}.
+    \item \textbf{Como funciona}: Usa dois apontadores, \texttt{inicio} e \texttt{fim}. Em cada iteração, calcula o \texttt{meio}. Se o valor procurado for maior, \texttt{inicio = meio + 1}. Se for menor, \texttt{fim = meio - 1}.
+\end{itemize}
+
+\subsection*{O Segredo do Ponto de Inserção}
+Quando o algoritmo não encontra o número, o ciclo \texttt{while(inicio <= fim)} termina. Nesse momento exato, a variável \texttt{inicio} aponta para o índice onde o elemento deveria ser inserido para manter a ordenação. Na linguagem Java, devolve-se \texttt{-(inicio + 1)}.
+
+
+% ---------------------------------------------------------
+% FICHA 3B
+% ---------------------------------------------------------
+\section{Ficha 3b - Genéricos (Generics)}
+Os genéricos (ex: \texttt{<T>}) permitem escrever código "universal" que funciona com qualquer tipo de dados, garantindo ao mesmo tempo segurança (Type Safety) na altura da compilação.
+
+\subsection*{O Problema da Herança e o \texttt{? super T}}
+Quando queremos que o nosso tipo genérico \texttt{T} saiba comparar-se (\texttt{Comparable}), a assinatura \texttt{<T extends Comparable<T>>} é demasiado estrita. Se uma classe \texttt{Rectangulo} herda de \texttt{Figura}, ela apenas implementa \texttt{Comparable<Figura>}, sendo rejeitada pela regra estrita.
+
+Para resolver a situação, usamos o \textbf{Wildcard Flexível}:
+\begin{verbatim}
+public static <T extends Comparable<? super T>> T maior(T a, T b)
+\end{verbatim}
+Isto diz ao compilador: "Aceita qualquer tipo \texttt{T} que saiba comparar-se consigo próprio \textbf{OU com qualquer um dos seus Pais (superclasses)}".
+
+\subsection*{Classes Genéricas e Upper Bounds}
+Podemos criar classes genéricas inteiras, como \texttt{Ponto<T, U>}. Para garantir que a classe só aceita números e proíbe terminantemente \texttt{Strings}, usamos Limites Superiores (Upper Bounds):
+\begin{verbatim}
+public class Ponto<T extends Number, U extends Number>
+\end{verbatim}
+
+
+% ---------------------------------------------------------
+% FICHA 4
+% ---------------------------------------------------------
+\section{Ficha 4 - Iteradores (Iterators)}
+Um Iterador é um padrão de desenho que permite percorrer sequencialmente os elementos de uma coleção sem expor a sua estrutura interna.
+
+\subsection*{Interfaces Chave: Iterable vs Iterator}
+\begin{itemize}
+    \item \textbf{Iterable<T>}: Interface implementada pela \textbf{Coleção}. Exige apenas o método \texttt{iterator()}, que devolve um \texttt{Iterator}. Permite usar o ciclo \texttt{for-each}.
+    \item \textbf{Iterator<T>}: Interface do \textbf{Guia Turístico}. Exige os métodos:
+    \begin{itemize}
+        \item \texttt{boolean hasNext()}: Devolve se ainda existem elementos por visitar.
+        \item \texttt{T next()}: Devolve o elemento atual e avança o apontador. Lança \texttt{NoSuchElementException} se já não houver mais elementos.
+        \item \texttt{void remove()}: Remove da coleção o último elemento devolvido pelo \texttt{next()}. Lança \texttt{IllegalStateException} se for chamado antes de qualquer \texttt{next()} ou chamado duas vezes seguidas.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Mecanismo de Defesa Fail-Fast (\texttt{ConcurrentModificationException})}
+Para evitar inconsistências se a coleção for alterada externamente enquanto está a ser percorrida:
+\begin{enumerate}
+    \item A coleção mantém uma variável interna \texttt{modCount} incrementada a cada inserção/remoção.
+    \item O \texttt{Iterator} tira uma cópia desse valor quando nasce: \texttt{expectedModCount = modCount}.
+    \item Em cada chamada a \texttt{next()} ou \texttt{remove()}, valida se \texttt{expectedModCount == modCount}. Se não for igual, lança imediatamente \texttt{ConcurrentModificationException}.
+\end{enumerate}
+
+\subsection*{O Segredo do \texttt{compareTo()}}
+O método \texttt{a.compareTo(b)} comporta-se mentalmente como uma subtração $a - b$:
+\begin{itemize}
+    \item Se $a > b$, devolve um número \textbf{positivo} ($> 0$).
+    \item Se $a == b$, devolve \textbf{zero} ($== 0$).
+    \item Se $a < b$, devolve um número \textbf{negativo} ($< 0$).
+\end{itemize}
+
+
+% ---------------------------------------------------------
+% FICHA 5
+% ---------------------------------------------------------
+\section{Ficha 5 - Listas, Pilhas e Complexidade Real}
+Esta unidade foca-se na manipulação avançada de listas (\texttt{List}), implementação de Pilhas (\texttt{Stack}) e comparação entre estruturas de memória contígua vs encadeada.
+
+\subsection*{ListIterator (Iterador Bidirecional)}
+Ao contrário do \texttt{Iterator} padrão, o \texttt{ListIterator} permite navegação bidirecional.
+\begin{itemize}
+    \item Para iniciar no fim: \texttt{lista.listIterator(lista.size())}.
+    \item Navegação para trás: \texttt{it.hasPrevious()} e \texttt{it.previous()}.
+\end{itemize}
+
+\subsection*{Implementação de Pilha: ArrayList vs LinkedList}
+Numa Pilha (\texttt{LIFO}), as operações devem ser implementadas no final da lista (\texttt{add} e \texttt{removeLast}):
+\begin{itemize}
+    \item \textbf{Teoria}: Ambas possuem complexidade $O(1)$ amortizada para operações no final.
+    \item \textbf{Prática}: A \textbf{ArrayList é drasticamente mais rápida} devido à \textit{Localidade de Referência} (CPU Cache) por utilizar memória contígua em array, enquanto a \texttt{LinkedList} sofre de \textit{Cache Misses}, cria overhead de nós na Heap e sobrecarrega o Garbage Collector.
+    \item Se implementado no início da lista (índice 0): \texttt{ArrayList} degrada para $O(N)$ devido ao deslocamento de memória (\textit{shifting}), enquanto \texttt{LinkedList} mantém $O(1)$.
+\end{itemize}
+
+\subsection*{Problema da MinStack em $O(1)$}
+Para obter o menor elemento de uma pilha em tempo constante $O(1)$ sem degradar o desempenho, mantêm-se duas pilhas sincronizadas:
+\begin{enumerate}
+    \item \textbf{Pilha Principal}: Armazena todos os elementos normalmente.
+    \item \textbf{Pilha de Mínimos}: Armazena apenas valores que sejam menores ou iguais ao atual topo dos mínimos.
+    \item Na remoção (\texttt{pop}), se o valor removido da pilha principal for igual ao topo da pilha de mínimos, é também removido desta última, restaurando o mínimo anterior instantaneamente.
+\end{enumerate}
+
+\end{document}
