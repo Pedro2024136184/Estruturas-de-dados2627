@@ -3,7 +3,7 @@ package Ficha6;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
+//Ex1
 public class GestorImpressoras {
     // 1. O Mapa que associa o Nome (String) ao Objeto Impressora
     private Map<String, Ficha6.Impressora> mapaimpressoras = new HashMap<>();
@@ -36,6 +36,34 @@ public class GestorImpressoras {
             // [TEU CÓDIGO AQUI]
         Ficha6.Impressora imp = mapaimpressoras.get(nome);
         return imp!=null;
-        //return mapaimpressoras.containsKey(nome); devolve true ou false 
+        //return mapaimpressoras.containsKey(nome); devolve true ou false
+    }
+
+    // Ex2
+    public void imprime(Trabalho t) {
+        Impressora melhor = null;
+
+        // Percorremos todas as impressoras registadas no Map
+        for (Impressora imp : mapaimpressoras.values()) {
+            if (melhor == null) {
+                melhor = imp;
+            } else {
+                // [TEU CÓDIGO AQUI]
+                // Critério 1: imp tem menos trabalhos que a melhor?
+                if (imp.getNumTrabalhos() < melhor.getNumTrabalhos()){
+                    melhor = imp;
+                } else if (imp.getNumTrabalhos() == melhor.getNumTrabalhos()) {
+                    if (imp.getFolhasProximoTrabalho() < melhor.getFolhasProximoTrabalho()) {
+                        melhor = imp;
+                    }
+                }
+                // Critério 2: se têm o mesmo número de trabalhos, imp tem próximo trabalho com menos folhas?
+                // Se algum critério bater certo: melhor = imp;
+            }
+        }
+
+        if (melhor != null) {
+            melhor.enviaTrabalho(t);
+        }
     }
 }
