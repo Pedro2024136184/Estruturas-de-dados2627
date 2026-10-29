@@ -119,4 +119,29 @@ public class ArvoreBinariaPesquisa<T extends Comparable<? super T>> {
         }
         return no.valor;
     }
+
+    // 9. REMOVE TODAS AS FOLHAS
+    public void removeFolhas() {
+        raiz = removeFolhasRecursivo(raiz);
+    }
+
+    private No<T> removeFolhasRecursivo(No<T> atual) {
+        if (atual == null) return null;
+
+        // [TEU CÓDIGO AQUI]
+        // 1. Se 'atual' for uma folha (esq == null && dir == null):
+        //    o que é que deves devolver para cortar a folha?
+        //
+        if (atual.esq == null && atual.dir == null) {
+            return null;
+        }
+
+        // 2. Se não for folha:
+
+            atual.esq = removeFolhasRecursivo(atual.esq);
+            atual.dir = removeFolhasRecursivo(atual.dir);
+
+        //    devolve o 'atual'
+        return atual;
+    }
 }
