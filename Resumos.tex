@@ -133,4 +133,79 @@ Para obter o menor elemento de uma pilha em tempo constante $O(1)$ sem degradar 
     \item Na remoção (\texttt{pop}), se o valor removido da pilha principal for igual ao topo da pilha de mínimos, é também removido desta última, restaurando o mínimo anterior instantaneamente.
 \end{enumerate}
 
+% ---------------------------------------------------------
+% FICHA 6
+% ---------------------------------------------------------
+\section{Ficha 6 - Mapas e Filas de Prioridade (PriorityQueue)}
+Esta unidade aborda o mapeamento chave-valor (\texttt{Map}) e o escalonamento de tarefas por prioridade com \texttt{PriorityQueue}.
+
+\subsection*{Dicionários / Mapas (\texttt{Map<K, V>})}
+Um mapa associa uma chave única (\texttt{K}) a um valor (\texttt{V}):
+\begin{itemize}
+    \item \textbf{HashMap}: Tabela de dispersão com complexidade média $O(1)$ para inserção (\texttt{put}), busca (\texttt{get}), e remoção (\texttt{remove}). Não garante qualquer ordem nas chaves.
+    \item \textbf{TreeMap}: Implementação baseada em árvore rubro-negra ($O(\log N)$) que mantém as chaves ordenadas.
+    \item \textbf{Métodos Chave}: \texttt{put(k, v)}, \texttt{get(k)}, \texttt{containsKey(k)}, \texttt{remove(k)}, \texttt{keySet()} (conjunto de chaves) e \texttt{values()} (coleção de valores).
+\end{itemize}
+
+\subsection*{Filas de Prioridade (\texttt{PriorityQueue})}
+Ao contrário de uma fila FIFO tradicional, a \texttt{PriorityQueue} desempilha sempre o elemento de \textbf{maior prioridade}:
+\begin{itemize}
+    \item \textbf{Funcionamento Interno}: Baseia-se numa \textit{Min-Heap} binária implementada sobre array.
+    \item \textbf{Ordem Padrão}: Por omissão em Java, o menor elemento segundo \texttt{Comparable} tem a maior prioridade (fica no topo).
+    \item \textbf{Complexidades}:
+    \begin{itemize}
+        \item \texttt{add(e)} / \texttt{offer(e)}: $O(\log N)$ (sobe na heap).
+        \item \texttt{poll()}: $O(\log N)$ (remove a raiz e desce para reorganizar).
+        \item \texttt{peek()}: $O(1)$ (apenas consulta o elemento na raiz).
+    \end{itemize}
+    \item \textbf{Critério de Comparação}: Para que os trabalhos com menos páginas tenham prioridade máxima, implementa-se \texttt{Comparable<T>} com \texttt{compareTo}:
+    \begin{verbatim}
+    public int compareTo(Trabalho outro) {
+        return Integer.compare(this.getNumPaginas(), outro.getNumPaginas());
+    }
+    \end{verbatim}
+\end{itemize}
+
+% ---------------------------------------------------------
+% FICHA 7
+% ---------------------------------------------------------
+\section{Ficha 7 - Árvores Binárias de Pesquisa (BST)}
+Uma Árvore Binária de Pesquisa (\textit{Binary Search Tree}) é uma estrutura hierárquica baseada em nós ligados.
+
+\subsection*{Regra Fundamental e Complexidade}
+\begin{itemize}
+    \item \textbf{Propriedade BST}: Para qualquer nó com valor $X$, todos os nós na sua subárvore esquerda possuem valor $< X$, e todos na subárvore direita possuem valor $> X$.
+    \item \textbf{Desempenho}:
+    \begin{itemize}
+        \item Caso Médio (árvore equilibrada): $O(\log N)$ para pesquisa, inserção e remoção.
+        \item Pior Caso (árvore degenerada em lista ligada): $O(N)$.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Percursos e Altura}
+\begin{itemize}
+    \item \textbf{Em-Ordem (\textit{In-Order})}: Visita Esquerda $\rightarrow$ Raiz $\rightarrow$ Direita. Numa BST, este percurso produz sempre os elementos por \textbf{ordem estritamente crescente}.
+    \item \textbf{Profundidade / Altura}: Calculada recursivamente como $1 + \max(\text{prof}(esq), \text{prof}(dir))$, com caso base de 0 para nós nulos.
+\end{itemize}
+
+\subsection*{Algoritmo de Remoção (Os 3 Casos)}
+Ao encontrar o nó a remover (\texttt{comp == 0}):
+\begin{enumerate}
+    \item \textbf{Caso 1 (0 Filhos / Folha)}: O nó devolve \texttt{null}. O pai desliga-se dele.
+    \item \textbf{Caso 2 (1 Filho)}: O nó devolve o seu único filho não-nulo (ex: \texttt{return atual.dir;}), ligando o pai diretamente ao neto.
+    \item \textbf{Caso 3 (2 Filhos)}:
+    \begin{itemize}
+        \item Encontra-se o \textbf{sucessor em-ordem} (o menor valor da subárvore direita, andando sempre para a esquerda).
+        \item Copia-se esse menor valor para o nó atual.
+        \item Remove-se recursivamente esse valor da subárvore direita: \texttt{atual.dir = removeRecursivo(atual.dir, menor)}.
+    \end{itemize}
+\end{enumerate}
+
+\subsection*{Poda de Folhas}
+Para remover todas as folhas diretamente sem quebrar a árvore:
+\begin{itemize}
+    \item Se for folha (\texttt{esq == null \&\& dir == null}), devolve \texttt{null}.
+    \item Se não for folha, propaga para os ramos (\texttt{atual.esq = removeFolhas(atual.esq)} e \texttt{atual.dir = removeFolhas(atual.dir)}) e devolve \texttt{atual}.
+\end{itemize}
+
 \end{document}
