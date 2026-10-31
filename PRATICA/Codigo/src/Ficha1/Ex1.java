@@ -1,8 +1,6 @@
 package Ficha1;
 
-import java.util.SortedMap;
-
-public class MaxSubArray {
+public class Ex1 {
 
     // 1. Versão O(N^2)
     public static int maxSubArrayN2(int[] a) {
