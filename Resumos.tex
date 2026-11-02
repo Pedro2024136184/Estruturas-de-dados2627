@@ -29,7 +29,12 @@ A análise de complexidade permite avaliar o desempenho de um algoritmo à medid
 \begin{enumerate}
     \item \textbf{Ignorar constantes}: $O(2N)$ ou $O(N/2)$ são apenas $O(N)$.
     \item \textbf{Manter o termo dominante}: Numa equação como $O(N^4 + N^2)$, a complexidade final é apenas $O(N^4)$.
-\end{enumerate}
+\subsection*{Algoritmos Notáveis em $O(N)$}
+\begin{itemize}
+    \item \textbf{Máxima Subsequência Contígua (Kadane)}: Encontra a fatia contígua de maior soma em tempo linear $O(N)$. Vai acumulando a soma e, sempre que o total se torna negativo ($< 0$), faz reset da soma a 0 (pois um valor negativo nunca ajudará os elementos seguintes a aumentar o total).
+    \item \textbf{Elemento Maioritário (Boyer-Moore)}: Determina se existe um elemento que surge mais de $N/2$ vezes em $O(N)$ de tempo e $O(1)$ de espaço. Funciona por cancelamento mútuo de votos entre elementos distintos (Fase 1) seguido de uma confirmação/auditoria final (Fase 2).
+\end{itemize}
+
 
 
 % ---------------------------------------------------------
@@ -44,8 +49,20 @@ A Pesquisa Binária é um algoritmo de pesquisa otimizado com complexidade $O(\l
     \item \textbf{Como funciona}: Usa dois apontadores, \texttt{inicio} e \texttt{fim}. Em cada iteração, calcula o \texttt{meio}. Se o valor procurado for maior, \texttt{inicio = meio + 1}. Se for menor, \texttt{fim = meio - 1}.
 \end{itemize}
 
-\subsection*{O Segredo do Ponto de Inserção}
-Quando o algoritmo não encontra o número, o ciclo \texttt{while(inicio <= fim)} termina. Nesse momento exato, a variável \texttt{inicio} aponta para o índice onde o elemento deveria ser inserido para manter a ordenação. Na linguagem Java, devolve-se \texttt{-(inicio + 1)}.
+\subsection*{O Segredo do Ponto de Inserção e Contagens em $O(\log N)$}
+Quando a pesquisa binária devolve um valor negativo codificado como \texttt{-(inicio + 1)}, podemos descodificar o índice de inserção através da fórmula inversa:
+\[
+\text{pos} = -\text{res} - 1 \quad (\text{ou } |\text{res}| - 1)
+\]
+Essa posição representa exatamente o número de elementos estritamente menores que a chave, permitindo:
+\begin{itemize}
+    \item \textbf{Percentagem de menores}: $\frac{\text{pos}}{N}$ sem qualquer ciclo adicional.
+    \item \textbf{Contagem em intervalo $[A, B]$}: $\text{pos}(B + 1) - \text{pos}(A)$ em tempo $O(\log N)$.
+    \item \textbf{Elementos repetidos}: Localiza o elemento em $O(\log N)$ e verifica os vizinhos imediatos (\texttt{pos - 1} e \texttt{pos + 1}) em $O(1)$.
+    \item \textbf{Maior elemento menor que $Z$}: Pesquisa binária mantendo uma variável \texttt{melhor} atualizada sempre que \texttt{array[meio] < z}, avançando para a direita (\texttt{inicio = meio + 1}) para encontrar candidatos maiores.
+    \item \textbf{Array particionado (ex: positivos seguidos de negativos)}: Se a chave e o meio tiverem sinais opostos, a decisão de ir para a esquerda ou direita depende exclusivamente do sinal (positivos à esquerda, negativos à direita), preservando a complexidade $O(\log N)$.
+\end{itemize}
+
 
 
 % ---------------------------------------------------------
@@ -63,11 +80,12 @@ public static <T extends Comparable<? super T>> T maior(T a, T b)
 \end{verbatim}
 Isto diz ao compilador: "Aceita qualquer tipo \texttt{T} que saiba comparar-se consigo próprio \textbf{OU com qualquer um dos seus Pais (superclasses)}".
 
-\subsection*{Classes Genéricas e Upper Bounds}
-Podemos criar classes genéricas inteiras, como \texttt{Ponto<T, U>}. Para garantir que a classe só aceita números e proíbe terminantemente \texttt{Strings}, usamos Limites Superiores (Upper Bounds):
-\begin{verbatim}
-public class Ponto<T extends Number, U extends Number>
-\end{verbatim}
+\subsection*{Comparação por Referência (\texttt{==}) vs Conteúdo (\texttt{compareTo})}
+\begin{itemize}
+    \item \textbf{Por Referência (\texttt{==})}: Avalia se duas variáveis apontam para o mesmo endereço de memória. O método genérico não necessita de qualquer limite (\textit{bound}) na declaração: \texttt{<T>}.
+    \item \textbf{Por Conteúdo (\texttt{compareTo})}: Avalia a ordem dos elementos. Exige que o tipo genérico assine o contrato comparável flexível: \texttt{<T extends Comparable<? super T>>}.
+\end{itemize}
+
 
 
 % ---------------------------------------------------------
